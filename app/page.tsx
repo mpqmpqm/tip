@@ -1,103 +1,143 @@
-import Image from "next/image";
+"use client";
 
-export default function Home() {
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Slider } from "@/components/ui/slider";
+import { useState } from "react";
+
+const f = new Intl.NumberFormat("en-US", {
+  style: "currency",
+  currency: "USD",
+});
+
+const compute = (total: number, tipPercent: number) => {
+  const totalCents = Math.round(total * 100);
+  const tipCents = Math.round((totalCents * tipPercent) / 100);
+  return [tipCents, totalCents + tipCents].map((cents) => cents / 100);
+};
+
+export default function TipCalculator() {
+  const [bill, setBill] = useState("");
+  const [tipPercent, setTipPercent] = useState(25);
+  const [split, setSplit] = useState(1);
+
+  const roundUp = () => {
+    const [_, baseTotal] = compute(Number(bill), tipPercent);
+    if (baseTotal === 0) return;
+    const target = Math.ceil(baseTotal);
+    const newTipPercent = ((target - Number(bill)) / Number(bill)) * 100;
+    setTipPercent(newTipPercent);
+  };
+
+  const [tip, total] = compute(Number(bill), tipPercent);
+  const splitTotal = total / split;
+
   return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
-
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
+    <div className="flex min-h-screen flex-col gap-2 p-4">
+      <div className="flex flex-col gap-1 rounded-lg border p-4">
+        <div className="flex items-center">
+          <Label className="flex-1 text-base whitespace-nowrap" htmlFor="bill">
+            Bill:
+          </Label>
+          <div className="flex items-center gap-1">
+            <div>$</div>
+            <Input
+              id="bill"
+              name="bill"
+              inputMode="decimal"
+              value={bill}
+              onChange={(e) => setBill(e.target.value)}
+              placeholder="0.00"
+              className="w-32 text-right"
+              autoFocus
             />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+          </div>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
+        <div className="flex flex-col gap-2">
+          <div className="flex items-center justify-between pe-3">
+            <span>Tip:</span>
+            <span>{f.format(tip)}</span>
+          </div>
+          <div className="flex items-center justify-between pe-3">
+            <span>Total:</span>
+            <span>{f.format(total)}</span>
+          </div>
+        </div>
+      </div>
+      <div className="flex flex-col gap-4 rounded-xl border p-6">
+        <div className="flex items-center justify-between">
+          <span>Tip %</span>
+          <span>{tipPercent.toFixed(2)}%</span>
+        </div>
+        <div className="flex gap-2">
+          <Button onClick={() => setTipPercent(25)} className="flex-1">
+            25%
+          </Button>
+          <Button onClick={() => setTipPercent(30)} className="flex-1">
+            30%
+          </Button>
+        </div>
+        <details>
+          <summary className="flex cursor-pointer items-center justify-between text-sm font-medium underline underline-offset-4">
+            <span>Custom Tip %</span>
+          </summary>
+          <div className="flex flex-col gap-3 pt-3">
+            <Input
+              inputMode="numeric"
+              id="tip-percent"
+              name="tip-percent"
+              type="number"
+              value={tipPercent}
+              onChange={(e) => setTipPercent(Number(e.target.value))}
+              min="0"
+              max="100"
+            />
+            <Slider
+              value={[tipPercent]}
+              onValueChange={(value) => setTipPercent(value[0])}
+              max={50}
+              step={1}
+            />
+          </div>
+        </details>
+      </div>
+      <details className="rounded-xl border">
+        <summary className="flex cursor-pointer items-center justify-between p-6">
+          <span>Split</span>
+          <div className="flex items-center gap-4">
+            <span>{f.format(splitTotal)} per person</span>
+            <span>
+              {split} {split === 1 ? "person" : "people"}
+            </span>
+          </div>
+        </summary>
+        <div className="flex flex-col gap-4 p-6 pt-0">
+          <div className="flex flex-col gap-3">
+            <Label htmlFor="split">Number of People</Label>
+            <Input
+              id="split"
+              name="split"
+              inputMode="numeric"
+              type="number"
+              value={split}
+              onChange={(e) => setSplit(Math.max(1, Number(e.target.value)))}
+              min="1"
+              max="20"
+            />
+          </div>
+          <Slider
+            value={[split]}
+            onValueChange={(value) => setSplit(value[0])}
+            min={1}
+            max={20}
+            step={1}
           />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+        </div>
+      </details>
+      <Button onClick={roundUp} variant="secondary">
+        Round Up
+      </Button>
     </div>
   );
 }
