@@ -4,7 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
-import { useState } from "react";
+import { useSearchParams } from "next/navigation";
+import { Suspense, useState } from "react";
 
 const f = new Intl.NumberFormat("en-US", {
   style: "currency",
@@ -17,8 +18,10 @@ const compute = (total: number, tipPercent: number) => {
   return [tipCents, totalCents + tipCents].map((cents) => cents / 100);
 };
 
-export default function TipCalculator() {
-  const [bill, setBill] = useState("");
+function TipCalculator() {
+  const searchParams = useSearchParams();
+
+  const [bill, setBill] = useState(Number(searchParams.get("bill")).toFixed(2) || "0.00");
   const [tipPercent, setTipPercent] = useState(25);
   const [split, setSplit] = useState(1);
 
@@ -141,5 +144,13 @@ export default function TipCalculator() {
         Round Up
       </Button>
     </div>
+  );
+}
+
+export default function Page() {
+  return (
+    <Suspense>
+      <TipCalculator />
+    </Suspense>
   );
 }
