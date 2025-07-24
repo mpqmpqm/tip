@@ -53,7 +53,6 @@ function TipCalculator() {
               onChange={(e) => setBill(e.target.value)}
               placeholder="0.00"
               className="w-32 text-right"
-              autoFocus
             />
           </div>
         </div>
