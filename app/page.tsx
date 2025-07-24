@@ -65,24 +65,26 @@ export default function TipCalculator() {
           </div>
         </div>
       </div>
-      <div className="flex flex-col gap-4 rounded-xl border p-6">
-        <div className="flex items-center justify-between">
-          <span>Tip %</span>
-          <span>{tipPercent.toFixed(2)}%</span>
-        </div>
-        <div className="flex gap-2">
-          <Button onClick={() => setTipPercent(25)} className="flex-1">
-            25%
-          </Button>
-          <Button onClick={() => setTipPercent(30)} className="flex-1">
-            30%
-          </Button>
+      <div className="rounded-xl border">
+        <div className="flex flex-col gap-4 p-6 pb-0">
+          <div className="flex items-center justify-between">
+            <span>Tip %</span>
+            <span>{tipPercent.toFixed(2)}%</span>
+          </div>
+          <div className="flex gap-2">
+            <Button onClick={() => setTipPercent(25)} className="flex-1">
+              25%
+            </Button>
+            <Button onClick={() => setTipPercent(30)} className="flex-1">
+              30%
+            </Button>
+          </div>
         </div>
         <details>
-          <summary className="flex cursor-pointer items-center justify-between text-sm font-medium underline underline-offset-4">
+          <summary className="flex cursor-pointer items-center justify-between p-6 text-sm font-medium underline underline-offset-4">
             <span>Custom Tip %</span>
           </summary>
-          <div className="flex flex-col gap-3 pt-3">
+          <div className="flex flex-col gap-6 p-6 pt-0">
             <Input
               inputMode="numeric"
               id="tip-percent"
@@ -112,7 +114,7 @@ export default function TipCalculator() {
             </span>
           </div>
         </summary>
-        <div className="flex flex-col gap-4 p-6 pt-0">
+        <div className="flex flex-col gap-6 p-6 pt-0">
           <div className="flex flex-col gap-3">
             <Label htmlFor="split">Number of People</Label>
             <Input
