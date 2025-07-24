@@ -90,7 +90,7 @@ export default function TipCalculator() {
               id="tip-percent"
               name="tip-percent"
               type="number"
-              value={tipPercent}
+              value={tipPercent.toFixed(2)}
               onChange={(e) => setTipPercent(Number(e.target.value))}
               min="0"
               max="100"
